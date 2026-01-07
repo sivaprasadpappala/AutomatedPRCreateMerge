@@ -95,6 +95,24 @@ pipeline {
         }
       }
     }
+
+    stage("Delete Feature Branch") {
+      steps {
+        withCredentials([string(
+          credentialsId: 'github-token',
+          variable: 'GITHUB_TOKEN'
+        )]) {
+          sh '''
+            echo "Deleting branch ${FEATURE_BRANCH}"
+
+            curl -s -X DELETE \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/git/refs/heads/${FEATURE_BRANCH}
+          '''
+        }
+      }
+    }
   }
 
   post {
